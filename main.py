@@ -10,15 +10,19 @@ def start_service(service_name, command):
 def main():
     # Mikroservislerin çalıştırılması için komutlar
     auth_service_command = "python auth_service.py"
-    operation_a_command = "python operation_a.py"
-    operation_b_command = "python operation_b.py"
-    api_gateway_command = "python api_gateway.py"
+    translate_text_command = "python src/text_translate/translate-text.py"
+    Data_access_command = "python src/Data_access/db.py"
+    Speech_recognition_command = "python src/Speech_Recognition/Speech_recognation.py"
+    api_gateway_command = "python src/gateway.py"
+
+    
 
     # Mikroservisleri başlat
-    start_service("Authentication", auth_service_command)
-    start_service("Operation A", operation_a_command)
-    start_service("Operation B", operation_b_command)
+    # start_service("Authentication", auth_service_command)
+    start_service("translate-text", translate_text_command)
+    start_service("Data_access", Data_access_command)
     start_service("API Gateway", api_gateway_command)
+    start_service("API Speech_Recognition", Speech_recognition_command)
 
     # Servislerin çalışmasını bekleyelim (opsiyonel)
     print("Tüm servisler başlatıldı. Sistem çalışıyor...")

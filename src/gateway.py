@@ -31,8 +31,8 @@ app = Flask(__name__)
 
 # Hedef API'lerin URL'leri
 AUTH_API_URL = "http://localhost:5001/authenticate"
-A_API_URL = "http://localhost:5002/operation_a"
-B_API_URL = "http://localhost:5003/operation_b"
+Translate_Text_URL = "http://localhost:5001"
+Speech_Recognition_URL = "http://localhost:5003"
 
 # Authentication işlemi
 def authenticate():
@@ -53,24 +53,31 @@ def authenticate():
 @auth_required
 def operation_a():
     # Authentication işlemi
-    auth_response = authenticate()
-    if auth_response.get('error'):
-        return auth_response
+    # auth_response = authenticate()
+    # if auth_response.get('error'):
+    #     return auth_response
     
     # A operasyon API'sine yönlendirme
-    response = requests.post(A_API_URL, json=request.json)
+    response = requests.post(Translate_Text_URL+'/', json=request.json,headers=request.headers)
     return (response.text, response.status_code, response.headers.items())
 
 # B operasyonuna yönlendirme
-@app.route('/operation_b', methods=['POST'])
+@app.route('/voice', methods=['POST'])
+@auth_required
 def operation_b():
     # Authentication işlemi
-    auth_response = authenticate()
-    if auth_response.get('error'):
-        return auth_response
+    # auth_response = authenticate()
+    # if auth_response.get('error'):
+    #     return auth_response
+
+    headers = dict(request.headers)
+    headers.pop('Content-Type')
     
     # B operasyon API'sine yönlendirme
-    response = requests.post(B_API_URL, json=request.json)
+    response = requests.post(Speech_Recognition_URL+'//detect-text-from-voice',
+                              files=request.files,
+                              headers=headers,
+                              )
     return (response.text, response.status_code, response.headers.items())
 
 if __name__ == '__main__':
