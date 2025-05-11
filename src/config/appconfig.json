@@ -1,0 +1,6 @@
+{
+    "config":{
+        "SECRET_KEY" : "your-secret-key-replace-this-in-production"
+    }
+
+}

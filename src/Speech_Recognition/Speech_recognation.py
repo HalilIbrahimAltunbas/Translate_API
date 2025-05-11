@@ -11,22 +11,23 @@ def detect_text_from_voice():
         return jsonify({"error": "No voice file provided"}), 400
     
     audio = request.files['file']
-    # file_path = os.path.join('uploaded_audio', 'audio.3gp')
+    file_path = os.path.join('uploaded_audio', 'audio.3gp')
     recognizer = sr.Recognizer()
 
-    # os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     # # Dosyayı kaydet
-    # audio.save(file_path)
-    # convert_to_wav(file_path,file_path)
+    audio.save(file_path)
+    convert_to_wav(file_path,file_path)
     
     
     try:
-        with sr.AudioFile(audio) as source:
+        with sr.AudioFile(file_path.replace('.3gp', '.wav')) as source:
             # print(audio)
             audiofile = recognizer.record(source)
             text = recognizer.recognize_google(audiofile, language="en-US")
-           
+            
 
             headers = dict(request.headers)
             headers['Content-Type'] = 'application/json'
@@ -60,4 +61,5 @@ def convert_to_wav(input_path, output_path):
         raise ValueError(f"Ses dosyası dönüştürülemedi: {e}")
     
 if __name__ == '__main__':
-    app.run(port=5003) 
+    # app.run(port=5003) 
+    app.run(host='0.0.0.0', port=5003)
