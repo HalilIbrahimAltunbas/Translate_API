@@ -30,10 +30,12 @@ from Authentication.utils import auth_required
 app = Flask(__name__)
 
 # Hedef API'lerin URL'leri
-AUTH_API_URL = "http://localhost:5001/authenticate"
+AUTH_API_URL = "http://localhost:5004"
 Translate_Text_URL = "http://localhost:5001"
 Speech_Recognition_URL = "http://localhost:5003"
-
+quiz_app_Url = "http://localhost:5005"
+OCR_app_Url ="http://localhost:5006"
+Gemini_app_URL ="http://localhost:5007"
 # Authentication işlemi
 def authenticate():
     token = request.headers.get('Authorization')
@@ -80,6 +82,69 @@ def operation_b():
                               )
     return (response.text, response.status_code, response.headers.items())
 
+@app.route('/register/<path:path>', methods=['GET','POST'])
+
+def operation_register(path):
+    
+    print(path)
+    # Authentication işlemi
+    # auth_response = authenticate()
+    # if auth_response.get('error'):
+    #     return auth_response
+
+    
+    if request.method == 'POST':    
+        # headers = dict(request.headers)
+        # headers.pop('Content-Type')
+    
+    # B operasyon API'sine yönlendirme
+        
+        response = requests.post(AUTH_API_URL+'/'+path,
+                                data = request.get_data(),
+                                headers=request.headers,
+                                json= request.get_json()
+                                )
+    elif request.method == 'GET':
+
+        response = requests.get(AUTH_API_URL+'/'+path,
+                                data = request.data,
+                                headers=request.headers,
+                                )
+    return (response.text, response.status_code, response.headers.items())
+
+@app.route('/quiz/<path:path>',methods=['GET'])
+@auth_required
+def get_quiz(path):
+    response = requests.get(f"{quiz_app_Url}/{path}",
+                data = request.data,
+                headers=request.headers
+                )
+    return (response.text, response.status_code, response.headers.items())
+
+@app.route("/detect-text",methods=['POST'])
+def detect_text_from_image():
+    headers = dict(request.headers)
+    headers.pop('Content-Type')
+    
+    # B operasyon API'sine yönlendirme
+    response = requests.post(OCR_app_Url+'/detect-text',
+                              files=request.files,
+                              headers=headers,
+                              )
+    return (response.text, response.status_code, response.headers.items())
+
+@app.route("/gemini",methods = ['POST'])
+def ask_gemini():
+    print('allright')
+    response = requests.post(
+                            Gemini_app_URL+'/',
+                            headers=request.headers,
+                            json=request.json
+                            )
+    print(response.json())
+    return (response.text,response.status_code,response.headers.items())
+
 if __name__ == '__main__':
-    app.run(port=5000)  # Gateway, 5000 portunda çalışacak
+    # app.run(port=5000)  # Gateway, 5000 portunda çalışacak
+    app.run(host='0.0.0.0', port=5000)
 
